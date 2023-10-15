@@ -1,5 +1,6 @@
-import React from "react";
+import { useState } from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
 const TaskCard = ({
   content,
   sectionIndex,
@@ -8,7 +9,38 @@ const TaskCard = ({
   boardId,
   setData,
   setCards,
+  card,
 }) => {
+  const [input, setInput] = useState(card.taskName);
+  console.log("The id of taskcard is: ", id);
+
+  console.log("The input is: ", input);
+  function debounce(cb, delay = 1000) {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      setTimeout(() => {
+        cb(...args);
+      }, delay);
+    };
+  }
+
+  const updateDataBase = debounce(async (input) => {
+    card.taskName = input;
+    console.log("The card is: ", card);
+    const updateResponse = await axios.put(
+      `http://localhost:8080/updateTask/${id}`,
+      card
+    );
+    console.log("the updated response is: ", updateResponse);
+  });
+
+  const updateTaskHandler = (event) => {
+    setInput(event.target.value);
+    console.log("the input is: ", input);
+    updateDataBase(event.target.value);
+  };
+
   const handleDelete = async (boardId, id) => {
     console.log("The id is: ", id);
     const deleteResp = await axios.delete(`http://localhost:8080/task/${id}`);
@@ -20,7 +52,6 @@ const TaskCard = ({
         setCards(res.data[sectionIndex].taskList);
       })
       .catch((err) => console.log("error fetching data", err));
-
     return;
   };
 
@@ -28,9 +59,10 @@ const TaskCard = ({
     <div className="relative p-4 mt-5 shadow-md rounded-md cursor-grab bg-blue-300">
       <input
         type="text"
-        value={content}
+        value={input}
         className={`font-semibold  border-none  text-black outline-none bg-blue-300`}
-        placeholder="Enter "
+        placeholder="Enter task here"
+        onChange={updateTaskHandler}
       ></input>
       <button
         className="absolute bottom-1 right-1"

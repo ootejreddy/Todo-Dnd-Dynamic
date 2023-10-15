@@ -22,7 +22,7 @@ const Section = ({ id, name, index, boardData, data, setData, setMount }) => {
     // const modifiedData = data[index];
     // modifiedData.data.push(newCard);
     // console.log("The modified data is: ", modifiedData);
-    let resp = await axios.put(`http://localhost:8080/task/${id}`, task);
+    let resp = await axios.put(`http://localhost:8080/setTask/${id}`, task);
     console.log("The response from update is: ", resp);
     resp = await axios.get("http://localhost:8080/taskBoards");
     console.log("The response from get is: ", resp.data);
@@ -61,6 +61,7 @@ const Section = ({ id, name, index, boardData, data, setData, setMount }) => {
             content={card.taskName}
             setData={setData}
             setCards={setCards}
+            card={card}
           ></TaskCard>
         </div>
       ))}
